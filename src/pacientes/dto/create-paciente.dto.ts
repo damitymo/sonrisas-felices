@@ -16,7 +16,7 @@ export class CreatePacienteDto {
   @ApiProperty({
     example: '1990-01-01',
     description: 'La fecha de nacimiento del paciente',
-  })
+  }) 
   @IsDate()
   fechaNacimiento: Date;
 
