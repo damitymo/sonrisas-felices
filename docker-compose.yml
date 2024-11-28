@@ -1,0 +1,51 @@
+services:
+  # Servicio para el contenedor de la API
+  sonrisas-felices:
+    build: 
+      context: .  # Contexto de la imagen
+      dockerfile: Dockerfile  # Archivo de Dockerfile
+
+    ports:
+      - "3000:3000"  # Exponer el puerto 3000 del contenedor
+    env_file:
+      - .env
+    volumes:
+      - .:/src
+    networks:
+      - sonrisas_network  # Aseguramos que los contenedores estén en la misma red
+
+  # Servicio para el contenedor de PostgreSQL
+  postgres:
+    container_name: postgres-sonrisas  # Nombre del contenedor de la base de datos
+    image: postgres  # Imagen de PostgreSQL
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data  # Monta los datos de la base de datos
+    env_file:
+      - .env  # Variables de entorno
+    ports:
+      - "5432:5432"  # Exponer el puerto 5432 para la conexión a la DB
+    
+    networks:
+      - sonrisas_network  # Aseguramos que los contenedores estén en la misma red
+
+  # Servicio para el contenedor de PgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-sonrisas
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tymoszukdamiandejesus@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      # POSTGRES_HOST_AUTH_METHOD: trust  # Permitir conexiones sin contraseña (solo para desarrollo)
+    ports:
+      - '8080:80'
+    networks: 
+      - sonrisas_network
+    depends_on:
+      - postgres  # Cambiado a postgresdb para coincidir con el nombre del servicio
+
+volumes:
+  postgres-data:
+
+networks:
+  sonrisas_network:  # Red personalizada para la comunicación entre contenedores
+    driver: bridge
