@@ -22,7 +22,7 @@ export class TurnosService {
   }
 
   async findOne(id: number): Promise<Turno> {
-    const turno = await this.turnosRepository.findOne(id);
+    const turno = await this.turnosRepository.findOneBy({ id });
     if (!turno) {
       throw new NotFoundException(`Turno con ID ${id} no encontrado`);
     }

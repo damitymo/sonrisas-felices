@@ -22,7 +22,7 @@ export class PacientesService {
   }
 
   async findOne(id: number): Promise<Paciente> {
-    const paciente = await this.pacienteRepository.findOne(id);
+    const paciente = await this.pacienteRepository.findOneBy({ id });
     if (!paciente) {
       throw new NotFoundException(`Paciente con ID ${id} no encontrado`);
     }

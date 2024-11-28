@@ -22,7 +22,7 @@ export class VacunasService {
   }
 
   async findOne(id: number): Promise<Vacuna> {
-    const vacuna = await this.vacunasRepository.findOne(id);
+    const vacuna = await this.vacunasRepository.findOneBy({ id });
     if (!vacuna) {
       throw new NotFoundException(`Vacuna con ID ${id} no encontrada`);
     }

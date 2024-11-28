@@ -22,7 +22,7 @@ export class ReportesService {
   }
 
   async findOne(id: number): Promise<Reporte> {
-    const reporte = await this.reportesRepository.findOne(id);
+    const reporte = await this.reportesRepository.findOneBy({ id });
     if (!reporte) {
       throw new NotFoundException(`Reporte con ID ${id} no encontrado`);
     }

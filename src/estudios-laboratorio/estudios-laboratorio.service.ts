@@ -22,7 +22,7 @@ export class EstudiosLaboratorioService {
   }
 
   async findOne(id: number): Promise<EstudioLaboratorio> {
-    const estudioLaboratorio = await this.estudiosLaboratorioRepository.findOne(id);
+    const estudioLaboratorio = await this.estudiosLaboratorioRepository.findOneBy({ id });
     if (!estudioLaboratorio) {
       throw new NotFoundException(`Estudio de laboratorio con ID ${id} no encontrado`);
     }

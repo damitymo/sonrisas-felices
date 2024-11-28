@@ -22,7 +22,7 @@ export class ProfesionalService {
   }
 
   async findOne(id: number): Promise<Profesional> {
-    const profesional = await this.profesionalRepository.findOne(id);
+    const profesional = await this.profesionalRepository.findOneBy({ id });
     if (!profesional) {
       throw new NotFoundException(`Profesional con ID ${id} no encontrado`);
     }

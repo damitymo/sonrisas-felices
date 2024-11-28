@@ -22,7 +22,7 @@ export class ModulosAlimentosService {
   }
 
   async findOne(id: number): Promise<ModuloAlimenticio> {
-    const moduloAlimenticio = await this.modulosAlimentosRepository.findOne(id);
+    const moduloAlimenticio = await this.modulosAlimentosRepository.findOneBy({ id });
     if (!moduloAlimenticio) {
       throw new NotFoundException(`Módulo alimenticio con ID ${id} no encontrado`);
     }
