@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateModulosAlimentoDto } from './dto/create-modulos-alimento.dto';
 import { UpdateModulosAlimentoDto } from './dto/update-modulos-alimento.dto';
+import { ModuloAlimenticio } from './entities/modulos-alimento.entity';
 
 @Injectable()
 export class ModulosAlimentosService {
-  create(createModulosAlimentoDto: CreateModulosAlimentoDto) {
-    return 'This action adds a new modulosAlimento';
+  constructor(
+    @InjectRepository(ModuloAlimenticio)
+    private readonly modulosAlimentosRepository: Repository<ModuloAlimenticio>,
+  ) {}
+
+  async create(createModulosAlimentoDto: CreateModulosAlimentoDto): Promise<ModuloAlimenticio> {
+    const moduloAlimenticio = this.modulosAlimentosRepository.create(createModulosAlimentoDto);
+    return this.modulosAlimentosRepository.save(moduloAlimenticio);
   }
 
-  findAll() {
-    return `This action returns all modulosAlimentos`;
+  async findAll(): Promise<ModuloAlimenticio[]> {
+    return this.modulosAlimentosRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} modulosAlimento`;
+  async findOne(id: number): Promise<ModuloAlimenticio> {
+    const moduloAlimenticio = await this.modulosAlimentosRepository.findOne(id);
+    if (!moduloAlimenticio) {
+      throw new NotFoundException(`Módulo alimenticio con ID ${id} no encontrado`);
+    }
+    return moduloAlimenticio;
   }
 
-  update(id: number, updateModulosAlimentoDto: UpdateModulosAlimentoDto) {
-    return `This action updates a #${id} modulosAlimento`;
+  async update(id: number, updateModulosAlimentoDto: UpdateModulosAlimentoDto): Promise<ModuloAlimenticio> {
+    const moduloAlimenticio = await this.modulosAlimentosRepository.preload({
+      id,
+      ...updateModulosAlimentoDto,
+    });
+    if (!moduloAlimenticio) {
+      throw new NotFoundException(`Módulo alimenticio con ID ${id} no encontrado`);
+    }
+    return this.modulosAlimentosRepository.save(moduloAlimenticio);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} modulosAlimento`;
+  async remove(id: number): Promise<void> {
+    const moduloAlimenticio = await this.findOne(id);
+    await this.modulosAlimentosRepository.remove(moduloAlimenticio);
   }
 }

@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEstudiosLaboratorioDto } from './dto/create-estudios-laboratorio.dto';
 import { UpdateEstudiosLaboratorioDto } from './dto/update-estudios-laboratorio.dto';
+import { EstudioLaboratorio } from './entities/estudios-laboratorio.entity';
 
 @Injectable()
 export class EstudiosLaboratorioService {
-  create(createEstudiosLaboratorioDto: CreateEstudiosLaboratorioDto) {
-    return 'This action adds a new estudiosLaboratorio';
+  constructor(
+    @InjectRepository(EstudioLaboratorio)
+    private readonly estudiosLaboratorioRepository: Repository<EstudioLaboratorio>,
+  ) {}
+
+  async create(createEstudiosLaboratorioDto: CreateEstudiosLaboratorioDto): Promise<EstudioLaboratorio> {
+    const estudioLaboratorio = this.estudiosLaboratorioRepository.create(createEstudiosLaboratorioDto);
+    return this.estudiosLaboratorioRepository.save(estudioLaboratorio);
   }
 
-  findAll() {
-    return `This action returns all estudiosLaboratorio`;
+  async findAll(): Promise<EstudioLaboratorio[]> {
+    return this.estudiosLaboratorioRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} estudiosLaboratorio`;
+  async findOne(id: number): Promise<EstudioLaboratorio> {
+    const estudioLaboratorio = await this.estudiosLaboratorioRepository.findOne(id);
+    if (!estudioLaboratorio) {
+      throw new NotFoundException(`Estudio de laboratorio con ID ${id} no encontrado`);
+    }
+    return estudioLaboratorio;
   }
 
-  update(id: number, updateEstudiosLaboratorioDto: UpdateEstudiosLaboratorioDto) {
-    return `This action updates a #${id} estudiosLaboratorio`;
+  async update(id: number, updateEstudiosLaboratorioDto: UpdateEstudiosLaboratorioDto): Promise<EstudioLaboratorio> {
+    const estudioLaboratorio = await this.estudiosLaboratorioRepository.preload({
+      id,
+      ...updateEstudiosLaboratorioDto,
+    });
+    if (!estudioLaboratorio) {
+      throw new NotFoundException(`Estudio de laboratorio con ID ${id} no encontrado`);
+    }
+    return this.estudiosLaboratorioRepository.save(estudioLaboratorio);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} estudiosLaboratorio`;
+  async remove(id: number): Promise<void> {
+    const estudioLaboratorio = await this.findOne(id);
+    await this.estudiosLaboratorioRepository.remove(estudioLaboratorio);
   }
 }

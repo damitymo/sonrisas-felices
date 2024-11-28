@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateVacunaDto } from './dto/create-vacuna.dto';
 import { UpdateVacunaDto } from './dto/update-vacuna.dto';
+import { Vacuna } from './entities/vacuna.entity';
 
 @Injectable()
 export class VacunasService {
-  create(createVacunaDto: CreateVacunaDto) {
-    return 'This action adds a new vacuna';
+  constructor(
+    @InjectRepository(Vacuna)
+    private readonly vacunasRepository: Repository<Vacuna>,
+  ) {}
+
+  async create(createVacunaDto: CreateVacunaDto): Promise<Vacuna> {
+    const vacuna = this.vacunasRepository.create(createVacunaDto);
+    return this.vacunasRepository.save(vacuna);
   }
 
-  findAll() {
-    return `This action returns all vacunas`;
+  async findAll(): Promise<Vacuna[]> {
+    return this.vacunasRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vacuna`;
+  async findOne(id: number): Promise<Vacuna> {
+    const vacuna = await this.vacunasRepository.findOne(id);
+    if (!vacuna) {
+      throw new NotFoundException(`Vacuna con ID ${id} no encontrada`);
+    }
+    return vacuna;
   }
 
-  update(id: number, updateVacunaDto: UpdateVacunaDto) {
-    return `This action updates a #${id} vacuna`;
+  async update(id: number, updateVacunaDto: UpdateVacunaDto): Promise<Vacuna> {
+    const vacuna = await this.vacunasRepository.preload({
+      id,
+      ...updateVacunaDto,
+    });
+    if (!vacuna) {
+      throw new NotFoundException(`Vacuna con ID ${id} no encontrada`);
+    }
+    return this.vacunasRepository.save(vacuna);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} vacuna`;
+  async remove(id: number): Promise<void> {
+    const vacuna = await this.findOne(id);
+    await this.vacunasRepository.remove(vacuna);
   }
 }
