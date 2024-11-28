@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { EstudioLaboratorio } from 'src/estudios-laboratorio/entities/estudios-laboratorio.entity';
 import { Vacuna } from 'src/vacunas/entities/vacuna.entity';
 import { ModuloAlimenticio } from 'src/modulos-alimentos/entities/modulos-alimento.entity';
@@ -16,7 +17,7 @@ export class CreatePacienteDto {
   @ApiProperty({
     example: '1990-01-01',
     description: 'La fecha de nacimiento del paciente',
-  }) 
+  })
   @IsDate()
   @Type(() => Date)
   fechaNacimiento: Date;
