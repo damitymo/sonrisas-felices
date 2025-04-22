@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors();
-
+cvbcvbcvbcxb
   const config = new DocumentBuilder()
     .setTitle('sonrisas-felices')
     .setDescription('Sonrisas Felices API')
